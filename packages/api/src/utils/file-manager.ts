@@ -1,10 +1,28 @@
-import { rename, access, mkdir, stat, unlink } from 'fs/promises';
+import { rename, access, mkdir, stat, unlink, copyFile } from 'fs/promises';
 import { join, basename } from 'path';
 import { logger } from './logger.js';
 
 const INGEST_FOLDER = process.env.INGEST_FOLDER || './final-downloads';
 
 export class FileManager {
+  /**
+   * Move file with cross-filesystem support.
+   * First tries atomic rename, falls back to copy+delete if crossing filesystems.
+   */
+  private async moveFile(source: string, destination: string): Promise<void> {
+    try {
+      await rename(source, destination);
+    } catch (error: any) {
+      // EXDEV error means crossing filesystem boundaries
+      if (error?.code === 'EXDEV') {
+        logger.info('Cross-filesystem move detected, using copy+delete');
+        await copyFile(source, destination);
+        await unlink(source);
+      } else {
+        throw error;
+      }
+    }
+  }
   async ensureDownloadFolder(): Promise<void> {
     try {
       await mkdir(INGEST_FOLDER, { recursive: true });
@@ -63,13 +81,13 @@ export class FileManager {
 
         logger.warn(`Destination exists, using unique name: ${uniqueFilename}`);
 
-        await rename(tempPath, uniquePath);
+        await this.moveFile(tempPath, uniquePath);
         logger.success(`File moved to: ${uniquePath}`);
         return uniquePath;
       }
 
       // Move file
-      await rename(tempPath, finalPath);
+      await this.moveFile(tempPath, finalPath);
       logger.success(`File moved to: ${finalPath}`);
 
       return finalPath;
