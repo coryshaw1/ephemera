@@ -51,8 +51,8 @@ RUN cd /app/node_modules/.pnpm/better-sqlite3@11.10.0/node_modules/better-sqlite
 # Stage 3: Production Runtime
 FROM node:22-alpine AS runtime
 
-# Install openssl for ENCRYPTION_KEY generation
-RUN apk add --no-cache openssl
+# Install openssl for ENCRYPTION_KEY generation and su-exec for privilege dropping
+RUN apk add --no-cache openssl su-exec
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -84,8 +84,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN mkdir -p /app/data /app/downloads /app/ingest /app/.crawlee && \
     chown -R nodejs:nodejs /app
 
-# Switch to non-root user
-USER nodejs
+# Note: Container starts as root to allow PUID/PGID modification
+# Entrypoint script will drop privileges to nodejs user via su-exec
 
 # Expose application port (default 8286)
 EXPOSE 8286
