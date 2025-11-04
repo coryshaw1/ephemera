@@ -59,7 +59,7 @@ const updateSettingsRoute = createRoute({
   path: '/settings',
   tags: ['Settings'],
   summary: 'Update application settings',
-  description: 'Update application configuration. Supports changing post-download action: move_only (just move to DOWNLOAD_FOLDER), upload_only (upload to Booklore and delete file), or both (move AND upload).',
+  description: 'Update application configuration. Supports changing post-download action: move_only (just move to INGEST_FOLDER), upload_only (upload to Booklore and delete file), or both (move AND upload).',
   request: {
     body: {
       content: {

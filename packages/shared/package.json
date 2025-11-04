@@ -23,7 +23,7 @@
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "generate:client": "openapi-typescript http://localhost:3222/api/openapi.json -o src/generated/api.ts"
+    "generate:client": "openapi-typescript http://localhost:8286/api/openapi.json -o src/generated/api.ts"
   },
   "dependencies": {
     "zod": "^3.24.1"

@@ -9,10 +9,10 @@ export default defineConfig({
     react(),
   ],
   server: {
-    port: 5173,
+    port: 5222,
     proxy: {
       '/api': {
-        target: 'http://localhost:3222',
+        target: 'http://localhost:8286',
         changeOrigin: true,
         // Configure proxy to handle SSE streaming
         configure: (proxy) => {

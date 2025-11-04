@@ -1,9 +1,13 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { swaggerUI } from '@hono/swagger-ui';
 import { cors } from 'hono/cors';
 import { logger as honoLogger } from 'hono/logger';
+import { readFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { initializeDatabase } from './db/index.js';
 import { logger } from './utils/logger.js';
 import { searchCacheManager } from './services/search-cache.js';
@@ -17,6 +21,9 @@ import queueRoutes from './routes/queue.js';
 import bookloreRoutes from './routes/booklore.js';
 import settingsRoutes from './routes/settings.js';
 import imageProxyRoutes from './routes/image-proxy.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Filter out undici socket errors from stderr
 const originalStderrWrite = process.stderr.write.bind(process.stderr);
@@ -83,8 +90,8 @@ app.onError((err, c) => {
   );
 });
 
-// Root endpoint
-app.get('/', (c) => {
+// API info endpoint
+app.get('/api', (c) => {
   return c.json({
     name: 'Ephemera API',
     version: '1.0.0',
@@ -169,6 +176,39 @@ app.get('/health', (c) => {
   });
 });
 
+// Serve static files from the web build (for production/Docker)
+// In development, Vite serves these files
+const webDistPath = join(__dirname, '../../web/dist');
+if (existsSync(webDistPath)) {
+  logger.info(`Serving static files from: ${webDistPath}`);
+
+  // Serve static assets with caching
+  app.use('/*', serveStatic({
+    root: webDistPath
+  }));
+
+  // SPA fallback - serve index.html for all non-API routes
+  app.get('*', (c) => {
+    const path = c.req.path;
+    // Skip API routes
+    if (path.startsWith('/api/') || path === '/health') {
+      return c.notFound();
+    }
+
+    // Serve index.html for SPA routing
+    const indexPath = join(webDistPath, 'index.html');
+    if (existsSync(indexPath)) {
+      const html = readFileSync(indexPath, 'utf-8');
+      return c.html(html);
+    }
+
+    return c.notFound();
+  });
+} else {
+  logger.warn(`Web build not found at ${webDistPath} - skipping static file serving`);
+  logger.warn('For development, use: pnpm dev');
+}
+
 // Cleanup cache periodically (every hour)
 setInterval(async () => {
   try {
@@ -198,11 +238,13 @@ setInterval(async () => {
 const port = parseInt(process.env.PORT || '3000');
 const host = process.env.HOST || '0.0.0.0';
 
+const servingStatic = existsSync(webDistPath);
 logger.success(`
 ╔═══════════════════════════════════════════════════╗
 ║                                                   ║
-║   Ephemera API is running!                        ║
+║   Ephemera is running!                            ║
 ║                                                   ║
+${servingStatic ? `║   Web:     http://${host}:${port}/                   ║` : ''}
 ║   API:     http://${host}:${port}/api                ║
 ║   Docs:    http://${host}:${port}/api/docs           ║
 ║   Health:  http://${host}:${port}/health             ║

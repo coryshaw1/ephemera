@@ -2,12 +2,12 @@ import { rename, access, mkdir, stat, unlink } from 'fs/promises';
 import { join, basename } from 'path';
 import { logger } from './logger.js';
 
-const DOWNLOAD_FOLDER = process.env.DOWNLOAD_FOLDER || './final-downloads';
+const INGEST_FOLDER = process.env.INGEST_FOLDER || './final-downloads';
 
 export class FileManager {
   async ensureDownloadFolder(): Promise<void> {
     try {
-      await mkdir(DOWNLOAD_FOLDER, { recursive: true });
+      await mkdir(INGEST_FOLDER, { recursive: true });
     } catch (error) {
       logger.error('Failed to create download folder:', error);
       throw error;
@@ -46,7 +46,7 @@ export class FileManager {
 
       // Use the original filename from the download server (already in tempPath)
       const filename = basename(tempPath);
-      const finalPath = join(DOWNLOAD_FOLDER, filename);
+      const finalPath = join(INGEST_FOLDER, filename);
 
       logger.info(`Moving file: ${filename}`);
 
@@ -59,7 +59,7 @@ export class FileManager {
         const ext = parts.pop();
         const name = parts.join('.');
         const uniqueFilename = `${name}_${timestamp}.${ext}`;
-        const uniquePath = join(DOWNLOAD_FOLDER, uniqueFilename);
+        const uniquePath = join(INGEST_FOLDER, uniqueFilename);
 
         logger.warn(`Destination exists, using unique name: ${uniqueFilename}`);
 

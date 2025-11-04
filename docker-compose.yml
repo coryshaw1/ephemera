@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  ephemera:
+    image: ghcr.io/OrwellianEpilogue/ephemera:latest
+    container_name: ephemera
+    restart: unless-stopped
+
+    ports:
+      - "8286:8286"
+
+    environment:
+      # Required:
+      AA_API_KEY:
+      AA_BASE_URL:
+
+    volumes:
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./ingest:/app/ingest
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8286/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3

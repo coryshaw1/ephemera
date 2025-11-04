@@ -284,7 +284,7 @@ export type DateFormat = z.infer<typeof dateFormatSchema>;
 // App settings schema
 export const appSettingsSchema = z.object({
   id: z.number().describe('Settings ID (always 1)'),
-  postDownloadAction: postDownloadActionSchema.describe('Action to perform after download completes: move_only (just move to DOWNLOAD_FOLDER), upload_only (upload to Booklore and delete file), both (move AND upload)'),
+  postDownloadAction: postDownloadActionSchema.describe('Action to perform after download completes: move_only (just move to INGEST_FOLDER), upload_only (upload to Booklore and delete file), both (move AND upload)'),
   bookRetentionDays: z.number().int().min(0).describe('Number of days to retain books before auto-deleting them (0 = never delete, default: 30)'),
   timeFormat: timeFormatSchema.describe('Time display format: 24h (24-hour) or ampm (12-hour with AM/PM)'),
   dateFormat: dateFormatSchema.describe('Date display format: us (MM/DD/YYYY) or eur (DD.MM.YYYY)'),

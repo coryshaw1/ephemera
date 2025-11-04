@@ -10,7 +10,7 @@ const BASE_URL = process.env.AA_BASE_URL;
  * This protects client IP addresses from being exposed to AA
  *
  * TEMPORARILY DISABLED: The proxy creates connection blocking issues.
- * Browser has 6 connection limit to localhost:3222. Even with lazy loading
+ * Browser has 6 connection limit to localhost:8286. Even with lazy loading
  * and semaphore limiting, proxy requests hold connections open while waiting,
  * which blocks pagination requests. Direct loading works fine.
  *

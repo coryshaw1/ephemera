@@ -1,6 +1,73 @@
 # Ephemera Book Downloader
 
-A modern full-stack application for searching and downloading books from your girl's favorite archive.
+Search and download books from your girl's favorite archive. Supports auto-move to a [BookLore](https://github.com/booklore-app/booklore) or [Calibre-Web-Automated](https://github.com/crocodilestick/Calibre-Web-Automated) ingest folder or BookLore API upload.
+
+## Docker setup
+
+### Setup the container using the Docker Compose template below:
+
+```yaml
+version: '3.8'
+
+services:
+  ephemera:
+    image: ghcr.io/OrwellianEpilogue/ephemera:latest
+    container_name: ephemera
+    restart: unless-stopped
+
+    ports:
+      - '8286:8286'
+
+    environment:
+      # Required:
+      AA_API_KEY:
+      AA_BASE_URL:
+
+    volumes:
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./ingest:/app/ingest
+
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:8286/health',
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+```
+
+### Required Environment Variables
+
+Only two variables are required:
+
+| Variable      | Description                    | Example                   |
+| ------------- | ------------------------------ | ------------------------- |
+| `AA_API_KEY`  | Archive API authentication key | `sk_abc123...`            |
+| `AA_BASE_URL` | Base URL of your archive       | `https://yourarchive.org` |
+
+### Optional Environment Variables
+
+All other settings have sensible defaults, but you can override them:
+
+| Variable           | Default                 | Description            |
+| ------------------ | ----------------------- | ---------------------- |
+| `PORT`             | `8286`                  | Application port       |
+| `DB_PATH`          | `/app/data/database.db` | Database location      |
+| `DOWNLOAD_FOLDER`  | `/app/downloads`        | Temp download folder   |
+| `INGEST_FOLDER`    | `/app/ingest`           | Final books folder     |
+| `ENCRYPTION_KEY`   | Auto-generated          | OAuth2 encryption key  |
+| `NODE_ENV`         | `production`            | Node environment       |
+| `RETRY_ATTEMPTS`   | `3`                     | Download retries       |
+| `REQUEST_TIMEOUT`  | `30000`                 | API timeout (ms)       |
+| `SEARCH_CACHE_TTL` | `300`                   | Search cache (seconds) |
 
 ## Monorepo Structure
 
@@ -13,7 +80,7 @@ ephemera/
 └── data/             # SQLite database
 ```
 
-## Quick Start
+## Development Quick Start
 
 ### Prerequisites
 
@@ -47,7 +114,7 @@ cd packages/api && pnpm db:migrate
 pnpm dev
 
 # Or run individually:
-pnpm dev:api    # Backend only (http://localhost:3222)
+pnpm dev:api    # Backend only (http://localhost:8286)
 pnpm dev:web    # Frontend only (http://localhost:5173)
 ```
 
@@ -72,7 +139,7 @@ pnpm build:web
 - **Database**: SQLite + Drizzle ORM
 - **Scraping**: Crawlee + Cheerio
 - **Validation**: Zod schemas
-- **OpenAPI**: Swagger UI and auto-generated spec at `http://host:3222/api/docs` & `http://host:3222/api/openapi.json`
+- **OpenAPI**: Swagger UI and auto-generated spec at `http://host:8286/api/docs` & `http://host:8286/api/openapi.json`
 
 #### Frontend (`packages/web`)
 
@@ -185,8 +252,8 @@ const data = await client.get('/api/new-endpoint')
 
 ## API Documentation
 
-- **Swagger UI**: http://localhost:3222/api/docs
-- **OpenAPI Spec**: http://localhost:3222/api/openapi.json
+- **Swagger UI**: http://localhost:8286/api/docs
+- **OpenAPI Spec**: http://localhost:8286/api/openapi.json
 
 ## Frontend Routes
 
@@ -202,7 +269,7 @@ The frontend proxies `/api/*` requests to the backend during development:
 // vite.config.ts
 proxy: {
   '/api': {
-    target: 'http://localhost:3222',
+    target: 'http://localhost:8286',
     changeOrigin: true,
   },
 }

@@ -12,7 +12,7 @@ export interface ClientConfig {
  * Default configuration
  */
 const defaultConfig: Required<ClientConfig> = {
-  baseUrl: 'http://localhost:3222',
+  baseUrl: 'http://localhost:8286',
   headers: {
     'Content-Type': 'application/json',
   },

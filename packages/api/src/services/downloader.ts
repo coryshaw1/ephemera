@@ -8,7 +8,7 @@ import { downloadTracker } from './download-tracker.js';
 
 const AA_API_KEY = process.env.AA_API_KEY;
 const AA_BASE_URL = process.env.AA_BASE_URL;
-const TEMP_FOLDER = process.env.TEMP_DOWNLOAD_FOLDER || './downloads';
+const TEMP_FOLDER = process.env.DOWNLOAD_FOLDER || './downloads';
 const REQUEST_TIMEOUT = parseInt(process.env.REQUEST_TIMEOUT || '30000');
 
 export interface DownloadOptions {

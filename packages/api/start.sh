@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Kill any process on port 3222
-echo "Cleaning up port 3222..."
-lsof -ti:3222 | xargs kill -9 2>/dev/null || true
+# Kill any process on port 8286
+echo "Cleaning up port 8286..."
+lsof -ti:8286 | xargs kill -9 2>/dev/null || true
 sleep 1
 
 # Start the server
