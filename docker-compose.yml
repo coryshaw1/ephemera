@@ -13,11 +13,19 @@ services:
       # Required:
       AA_API_KEY:
       AA_BASE_URL:
+      # Enter any random string with 32 characters, can use
+      # openssl rand -hex 32
+      ENCRYPTION_KEY:
 
     volumes:
       - ./data:/app/data
       - ./downloads:/app/downloads
       - ./ingest:/app/ingest
+
+    # Set DNS server to prevent EU blocking
+    #dns:
+    #  - 1.1.1.1
+    #  - 1.0.0.1
 
     healthcheck:
       test:
