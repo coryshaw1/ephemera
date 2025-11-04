@@ -13,19 +13,19 @@ import '@mantine/notifications/styles.css';
 
 // Create custom theme
 const theme = createTheme({
-  primaryColor: 'custom-tan',
+  primaryColor: 'custom-primary',
   colors: {
-    'custom-tan': [
-      '#f5f1eb',
-      '#e8dfd1',
-      '#d4c4aa',
-      '#c0a87f',
-      '#AB8F68',
-      '#9d8159',
-      '#8f7349',
-      '#7d6340',
-      '#6b5436',
-      '#59452c',
+    'custom-primary': [
+      '#ebe9ff',
+      '#d1cdff',
+      '#b3adff',
+      '#9589ff',
+      '#7866ff',
+      '#5c43ff',
+      '#362EFF',
+      '#2920cc',
+      '#1f1899',
+      '#150f66',
     ],
   },
 });
