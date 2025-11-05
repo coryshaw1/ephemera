@@ -1,5 +1,13 @@
 # @ephemera/api
 
+## 1.1.1
+
+### Patch Changes
+
+- fix uid, pid setup
+- Updated dependencies
+  - @ephemera/shared@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes
