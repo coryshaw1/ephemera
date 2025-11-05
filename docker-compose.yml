@@ -14,8 +14,8 @@ services:
       # Optional
       AA_API_KEY:
       FLARESOLVERR_URL: http://flaresolverr:8191
+      PUID: 1000
       PGID: 100
-      PUID: 1027
 
     volumes:
       - ./data:/app/data
