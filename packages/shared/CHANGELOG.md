@@ -1,5 +1,15 @@
 # @ephemera/shared
 
+## 2.0.0
+
+### Major Changes
+
+- standalone .crawlee folder
+
+### Patch Changes
+
+- standalone .crawlee folder
+
 ## 1.1.2
 
 ### Patch Changes
