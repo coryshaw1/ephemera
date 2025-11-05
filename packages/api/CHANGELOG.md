@@ -1,5 +1,13 @@
 # @ephemera/api
 
+## 1.1.2
+
+### Patch Changes
+
+- fix .crawlee folder permissions
+- Updated dependencies
+  - @ephemera/shared@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes

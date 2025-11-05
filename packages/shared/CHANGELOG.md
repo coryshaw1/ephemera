@@ -1,5 +1,11 @@
 # @ephemera/shared
 
+## 1.1.2
+
+### Patch Changes
+
+- fix .crawlee folder permissions
+
 ## 1.1.1
 
 ### Patch Changes
