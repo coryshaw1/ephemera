@@ -54,9 +54,13 @@ export CRAWLEE_STORAGE_DIR="${CRAWLEE_STORAGE_DIR:-/app/.crawlee}"
 export DOWNLOAD_FOLDER="${DOWNLOAD_FOLDER:-/app/downloads}"
 export INGEST_FOLDER="${INGEST_FOLDER:-/app/ingest}"
 
-# Optionally create required directories
+# Create mounted directories (will be owned by host via volumes)
 echo "Setting up directories..."
 mkdir -p /app/data /app/downloads /app/ingest
+
+# Create internal .crawlee directory and set ownership
+mkdir -p /app/.crawlee
+chown -R "$PUID:$PGID" /app/.crawlee
 
 # Run database migrations as the application user
 echo "Running database migrations..."
