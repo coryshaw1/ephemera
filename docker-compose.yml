@@ -54,6 +54,11 @@ services:
       - CAPTCHA_SOLVER=none
       - TZ=Europe/Berlin
 
+    # Set DNS server to prevent EU blocking
+    #dns:
+    #  - 1.1.1.1
+    #  - 1.0.0.1
+
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8191/health"]
       interval: 30s
