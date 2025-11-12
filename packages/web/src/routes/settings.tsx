@@ -169,8 +169,8 @@ function SettingsComponent() {
             )}
 
             <NumberInput
-              label="Book Retention Period"
-              description="Number of days to keep books before auto-deleting them (0 = never delete, cleanup runs daily)"
+              label="Book Cache Retention Period"
+              description="Number of days to keep book search and download cache before auto-deleting them (0 = never delete, cleanup runs daily)"
               placeholder="30"
               value={bookRetentionDays}
               onChange={(value) => setBookRetentionDays(Number(value) || 0)}
