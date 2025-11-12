@@ -582,9 +582,13 @@ export const Route = createFileRoute("/search")({
       ext: toArray(search.ext),
       lang: toArray(search.lang),
       desc:
-        typeof search.desc === "boolean" || search.desc === "true"
-          ? true
-          : undefined,
+        typeof search.desc === "boolean"
+          ? search.desc
+          : search.desc === "true"
+            ? true
+            : search.desc === "false"
+              ? false
+              : undefined,
     };
   },
 });
