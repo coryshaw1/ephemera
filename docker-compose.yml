@@ -11,8 +11,8 @@ services:
       # Required:
       AA_BASE_URL:
       # FlareSolverr is used for slow download fallback when API key is missing or quota exhausted
-      # Default: http://localhost:8191 (or http://flaresolverr:8191 in Docker)
-      FLARESOLVERR_URL: http://localhost:8191
+      # Default: http://127.0.0.1:8191 (or http://flaresolverr:8191 in Docker)
+      FLARESOLVERR_URL: http://127.0.0.1:8191
 
       # Optional
 
