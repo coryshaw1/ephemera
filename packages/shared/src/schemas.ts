@@ -34,7 +34,7 @@ export const searchQuerySchema = z.object({
   acc: coerceArray
     .optional()
     .describe("Access type filters (e.g., aa_download, external_download)"),
-  src: coerceArray.optional().describe("Source filters (e.g., lgli, zlib, ia)"),
+  src: coerceArray.optional().describe("Source filters"),
   lang: coerceArray.optional().describe("Language filters (e.g., en, ru, zh)"),
   desc: z.coerce
     .boolean()
@@ -234,6 +234,18 @@ export const queueItemSchema = z.object({
     .datetime()
     .optional()
     .describe("When quota was last checked"),
+  // Countdown tracking
+  countdownSeconds: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .describe("Detected countdown duration for slow downloads in seconds"),
+  countdownStartedAt: z
+    .string()
+    .datetime()
+    .optional()
+    .describe("When countdown started (for calculating remaining time)"),
   // Optional Booklore upload tracking
   uploadStatus: z
     .enum(["pending", "uploading", "completed", "failed"])
