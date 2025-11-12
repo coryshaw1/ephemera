@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { execSync, spawn } from 'child_process';
-import { writeFileSync, mkdirSync } from 'fs';
+import { writeFileSync, readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { randomBytes } from 'crypto';
+import { tmpdir } from 'os';
 
 // Get the last git tag
 function getLastTag() {
@@ -33,50 +33,77 @@ function getCommitsSinceTag(tag) {
   }
 }
 
-// Generate a random changeset filename
-function generateChangesetId() {
-  return randomBytes(4).toString('hex');
-}
-
-// Create the changeset file
-function createChangesetFile(summary) {
-  const changesetId = generateChangesetId();
-  const changesetDir = join(process.cwd(), '.changeset');
-  const changesetPath = join(changesetDir, `${changesetId}.md`);
-
-  // Ensure .changeset directory exists
-  mkdirSync(changesetDir, { recursive: true });
-
-  const changesetContent = `---
-"@ephemera/api": patch
-"@ephemera/web": patch
-"@ephemera/shared": patch
----
-
-${summary}
-`;
-
-  writeFileSync(changesetPath, changesetContent);
-  return changesetPath;
-}
-
-// Open editor for the user to edit the changeset
-function openEditor(filePath) {
+// Run changeset CLI with a script to auto-fill summary
+function runChangesetWithAutoSummary(commits) {
   return new Promise((resolve, reject) => {
-    const editor = process.env.EDITOR || process.env.VISUAL || 'vi';
-    const child = spawn(editor, [filePath], {
+    // Create a temporary file with the commits
+    const tempSummaryFile = join(tmpdir(), `changeset-summary-${Date.now()}.txt`);
+    writeFileSync(tempSummaryFile, commits);
+
+    console.log('Running changeset CLI...');
+    console.log('Instructions:');
+    console.log('  1. Select packages (use space to select, enter to confirm)');
+    console.log('  2. Choose bump type (patch/minor/major)');
+    console.log('  3. When asked for summary, press ENTER to open editor');
+    console.log('     The editor will have commit messages prefilled\n');
+
+    // Set EDITOR to a script that prefills the file
+    const originalEditor = process.env.EDITOR || process.env.VISUAL || 'vi';
+    const wrapperScript = join(tmpdir(), `editor-wrapper-${Date.now()}.sh`);
+
+    // Create wrapper script that prefills the file before opening editor
+    const wrapperContent = `#!/bin/bash
+FILE="$1"
+
+# Read the file content
+CONTENT=$(cat "$FILE")
+
+# Check if it's the changeset summary prompt (contains "Please enter a summary")
+if echo "$CONTENT" | grep -q "Please enter a summary"; then
+  # Extract just the comment lines
+  COMMENTS=$(echo "$CONTENT" | grep "^#")
+
+  # Create new content with commits + comments
+  {
+    cat "${tempSummaryFile}"
+    echo ""
+    echo "$COMMENTS"
+  } > "$FILE"
+fi
+
+# Open the real editor
+exec ${originalEditor} "$FILE"
+`;
+    writeFileSync(wrapperScript, wrapperContent);
+    execSync(`chmod +x "${wrapperScript}"`);
+
+    const child = spawn('pnpm', ['exec', 'changeset'], {
       stdio: 'inherit',
+      env: {
+        ...process.env,
+        EDITOR: wrapperScript,
+        VISUAL: wrapperScript,
+      },
     });
 
     child.on('exit', (code) => {
+      // Clean up
+      try {
+        execSync(`rm -f "${tempSummaryFile}" "${wrapperScript}"`);
+      } catch {}
+
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`Editor exited with code ${code}`));
+        reject(new Error(`Changeset exited with code ${code}`));
       }
     });
 
     child.on('error', (err) => {
+      // Clean up
+      try {
+        execSync(`rm -f "${tempSummaryFile}" "${wrapperScript}"`);
+      } catch {}
       reject(err);
     });
   });
@@ -92,20 +119,19 @@ async function main() {
   const commits = getCommitsSinceTag(lastTag);
   console.log('Commits since last tag:');
   console.log(commits);
-  console.log();
-
-  // Create the changeset file with prefilled commits
-  const changesetPath = createChangesetFile(commits);
-  console.log(`Created changeset file: ${changesetPath}`);
-  console.log('Opening editor for you to review and edit...\n');
+  console.log('\n' + '─'.repeat(80) + '\n');
 
   try {
-    await openEditor(changesetPath);
-    console.log('\nChangeset created successfully!');
+    await runChangesetWithAutoSummary(commits);
+    console.log('\n✓ Changeset created successfully!');
     console.log('Run "pnpm changeset:status" to see pending changesets.');
   } catch (error) {
-    console.error('Error opening editor:', error.message);
-    console.log(`\nYou can manually edit the file at: ${changesetPath}`);
+    if (error.message.includes('code 1')) {
+      console.log('\nChangeset creation was cancelled.');
+    } else {
+      console.error('Error:', error.message);
+      process.exit(1);
+    }
   }
 }
 
