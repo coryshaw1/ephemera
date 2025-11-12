@@ -24,7 +24,7 @@
     "db:studio": "pnpm --filter @ephemera/api db:studio",
     "changeset": "node scripts/create-changeset.js",
     "changeset:status": "changeset status --verbose",
-    "version": "changeset version && node -e \"const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));const apiPkg=JSON.parse(fs.readFileSync('packages/api/package.json'));pkg.version=apiPkg.version;fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\\n')\" && git add . && git commit -m 'chore: version packages'",
+    "version": "changeset version && node -e \"const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));const apiPkg=JSON.parse(fs.readFileSync('packages/api/package.json'));pkg.version=apiPkg.version;fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\\n')\" && git add . && node scripts/version-commit.js",
     "version:check": "changeset status",
     "release": "pnpm run version && pnpm run tag && pnpm run push",
     "tag": "node scripts/create-tag.js",
