@@ -1,5 +1,44 @@
 # @ephemera/shared
 
+## 1.2.0
+
+### Minor Changes
+
+- - improve changeset and release
+  - feat: pwa and icons (#22)
+  - feat: fetch libraries from booklore for library/path selection (#21)
+  - feat: requests SSE streaming (#20)
+  - feat: periodically delete search cache (#18)
+  - feat: faster slow download option (#17)
+  - feat: run prettier on save, reformat all files (#16)
+  - feat: event notifications via apprise (#15)
+  - feat: link to calibre/booklore library (#13)
+  - show current version and update notification (#11)
+  - feat: type safety, linting, pre-commit hooks (#10)
+  - simple requests system for books not yet available (#6)
+  - add retry button to errored downloads
+  - improve dark mode colors
+  - fix search cache labels
+  - fix search button positioning
+  - move flaresolverr to required env vars
+- - improve changeset and release
+  - feat: pwa and icons (#22)
+  - feat: fetch libraries from booklore for library/path selection (#21)
+  - feat: requests SSE streaming (#20)
+  - feat: periodically delete search cache (#18)
+  - feat: faster slow download option (#17)
+  - feat: run prettier on save, reformat all files (#16)
+  - feat: event notifications via apprise (#15)
+  - feat: link to calibre/booklore library (#13)
+  - show current version and update notification (#11)
+  - feat: type safety, linting, pre-commit hooks (#10)
+  - simple requests system for books not yet available (#6)
+  - add retry button to errored downloads
+  - improve dark mode colors
+  - fix search cache labels
+  - fix search button positioning
+  - move flaresolverr to required env vars
+
 ## 1.1.7
 
 ### Patch Changes
