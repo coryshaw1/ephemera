@@ -146,10 +146,16 @@ docker pull ghcr.io/orwellianepilogue/ephemera:dev-sha-7aa9d68
 
 Only two variables are required:
 
-| Variable      | Description                    | Example                   |
-| ------------- | ------------------------------ | ------------------------- |
-| `AA_API_KEY`  | Archive API authentication key | `sk_abc123...`            |
-| `AA_BASE_URL` | Base URL of your archive       | `https://yourarchive.org` |
+| Variable           | Description                     | Example                   |
+| ------------------ | ------------------------------- | ------------------------- |
+| `AA_BASE_URL`      | Base URL of your archive        | `https://yourarchive.org` |
+| `FLARESOLVERR_URL` | Flaresolverr URL from container | `http://127.0.0.1:8191`   |
+
+### Recommended Environment Variables
+
+| Variable      | Default | Description                    |
+| ------------- | ------- | ------------------------------ |
+| `LG_BASE_URL` | `empty` | `https://gen.com, li, bz etc.` |
 
 ### Optional Environment Variables
 
@@ -157,6 +163,7 @@ All other settings have sensible defaults, but you can override them:
 
 | Variable           | Default                 | Description            |
 | ------------------ | ----------------------- | ---------------------- |
+| `AA_API_KEY`       | `empty`                 | `dhw8adhwa8...`        |
 | `PORT`             | `8286`                  | Application port       |
 | `DB_PATH`          | `/app/data/database.db` | Database location      |
 | `DOWNLOAD_FOLDER`  | `/app/downloads`        | Temp download folder   |
